@@ -16,3 +16,13 @@ const getUsers = (req, res) => {
         res.status(200).json(results.rows)
     })
 }
+
+const getUserById = (req, res) => {
+    pool.query('SELECT FROM users WHERE id = $id', [id], (error, results) => {
+        if (error) {
+            throw error
+        }
+
+        res.status(200).json(results.rows)
+    })
+}
