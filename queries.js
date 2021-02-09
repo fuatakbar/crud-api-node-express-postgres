@@ -18,7 +18,8 @@ const getUsers = (req, res) => {
 }
 
 const getUserById = (req, res) => {
-    pool.query('SELECT FROM users WHERE id = $id', [id], (error, results) => {
+    const id = parseInt(req.params.id)
+    pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
         if (error) {
             throw error
         }
@@ -29,19 +30,19 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
     const { name, email } = req.body
-    pool.query('UPDATE users SET name = $name, email = $email', [name, email], (error, results) => {
+    pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
         if (error) {
             throw error
         }
 
-        res.status(201).send(`User Created Successfully with ID: ${results.insertId}`)
+        res.status(201).send(`User Created Successfully with ID: ${results.id}`)
     })
 }
 
 const updateUser = (req, res) => {
     const id = parseInt(req.params.id)
     const { name, email } = req.body
-    pool.query('INSERT INTO users (name, email) VALUES ($name, $email) WHERE id = $id', [name, email, id], (error, results) => {
+    pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [name, email, id], (error, results) => {
         if (error) {
             throw error
         }
@@ -52,11 +53,19 @@ const updateUser = (req, res) => {
 
 const deleteUser = (req, res) => {
     const id = req.params.id
-    pool.query('DELETE users WHERE id = $id', [id], (error, results) => {
+    pool.query('DELETE users WHERE id = $1', [id], (error, results) => {
         if (error) {
             throw error
         }
 
         res.status(200).send(`User Has Been Deleted with ID: ${id}`)
     })
+}
+
+module.exports = {
+    getUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser
 }
